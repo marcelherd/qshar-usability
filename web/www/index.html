@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>0xC0C</title>
+    <link rel="stylesheet" href="/www/style.css" />
+  </head>
+  <body>
+    <h1>0xC0C</h1>
+    <label for="playerInput">Player</label>
+    <input id="playerInput" placeholder="Player"></input>
+    <button id="updateButton" onclick="update()">Update</button>
+
+    <h2>Unfinished maps</h2>
+
+    <h3>Easy</h3>
+    <table id="easyTable" class="sortable">
+      <thead>
+        <tr>
+            <th>Name</th>
+            <th>Author</th>
+            <th class="sorttable_numeric">Difficulty</th>
+            <th class="sorttable_numeric">Finishes</th>
+            <th class="sorttable_numeric">Finishers</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h3>Main</h3>
+    <table id="mainTable" class="sortable">
+      <thead>
+          <tr>
+              <th>Name</th>
+              <th>Author</th>
+              <th class="sorttable_numeric">Difficulty</th>
+              <th class="sorttable_numeric">Finishes</th>
+              <th class="sorttable_numeric">Finishers</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h3>Hard</h3>
+    <table id="hardTable" class="sortable">
+      <thead>
+          <tr>
+              <th>Name</th>
+              <th>Author</th>
+              <th class="sorttable_numeric">Difficulty</th>
+              <th class="sorttable_numeric">Finishes</th>
+              <th class="sorttable_numeric">Finishers</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h3>Insane</h3>
+    <table id="insaneTable" class="sortable">
+      <thead>
+          <tr>
+              <th>Name</th>
+              <th>Author</th>
+              <th class="sorttable_numeric">Difficulty</th>
+              <th class="sorttable_numeric">Finishes</th>
+              <th class="sorttable_numeric">Finishers</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h3>Mod</h3>
+    <table id="modTable" class="sortable">
+      <thead>
+          <tr>
+              <th>Name</th>
+              <th>Author</th>
+              <th class="sorttable_numeric">Difficulty</th>
+              <th class="sorttable_numeric">Finishes</th>
+              <th class="sorttable_numeric">Finishers</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+      function tr(obj) {
+        const tr = document.createElement('tr');
+        for (let k in obj) {
+          if (['category', 'points', 'firstFinisher'].includes(k)) continue;
+          tr.appendChild(td(obj[k]));
+        }
+        return tr;
+      }
+
+      function td(attr) {
+        const td = document.createElement('td');
+        td.innerText = attr;
+        return td;
+      }
+
+      function updateUI(data) {
+        clearTables();
+        
+        const unfinishedMaps = data.allMaps.filter(m => data.unfinishedMaps.includes(m.name));
+
+        const easyMaps = unfinishedMaps.filter(m => m.category === 'ESY');
+        const mainMaps = unfinishedMaps.filter(m => m.category === 'MN');
+        const hardMaps = unfinishedMaps.filter(m => m.category === 'HRD');
+        const insaneMaps = unfinishedMaps.filter(m => m.category === 'INS');
+        const modMaps = unfinishedMaps.filter(m => m.category === 'MOD');
+
+        const easyTable = document.querySelector('#easyTable tbody');
+        easyMaps.forEach(m => easyTable.appendChild(tr(m)));
+        sorttable.makeSortable(document.getElementById('easyTable'));
+
+        const mainTable = document.querySelector('#mainTable tbody');
+        mainMaps.forEach(m => mainTable.appendChild(tr(m)));
+        sorttable.makeSortable(document.getElementById('mainTable'));
+
+        const hardTable = document.querySelector('#hardTable tbody');
+        hardMaps.forEach(m => hardTable.appendChild(tr(m)));
+        sorttable.makeSortable(document.getElementById('hardTable'));
+
+        const insaneTable = document.querySelector('#insaneTable tbody');
+        insaneMaps.forEach(m => insaneTable.appendChild(tr(m)));
+        sorttable.makeSortable(document.getElementById('insaneTable'));
+
+        const modTable = document.querySelector('#modTable tbody');
+        modMaps.forEach(m => modTable.appendChild(tr(m)));
+        sorttable.makeSortable(document.getElementById('modTable'));
+      }
+
+      function clearTables() {
+        document.querySelector('#easyTable tbody').innerHTML = '';
+        document.querySelector('#mainTable tbody').innerHTML = '';
+        document.querySelector('#hardTable tbody').innerHTML = '';
+        document.querySelector('#insaneTable tbody').innerHTML = '';
+        document.querySelector('#modTable tbody').innerHTML = '';
+      }
+
+      function update() {
+        const player = document.getElementById('playerInput').value;
+        return fetch(`/api/player.js?name=${encodeURIComponent(player)}`)
+          .then(response => response.json())
+          .then(responseJson => updateUI(responseJson));
+      }
+    </script>
+    <script async src="/www/sorttable.js"></script>
+  </body>
+</html>
